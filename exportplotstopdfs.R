@@ -1,4 +1,4 @@
-##exporting plots to pdfs OKuur?
+##exporting plots to pdfs OKuur??
 getwd()
 head(mtcars)
 
