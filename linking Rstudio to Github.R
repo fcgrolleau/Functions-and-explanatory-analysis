@@ -1,1 +1,21 @@
-##linking Rstudio and Github
+##exporting plots to pdfs
+getwd()
+head(mtcars)
+
+length(mtcars$hp)
+hist(mtcars$hp, col = "green", breaks = 10, main="Horse Power distribution in mtcars")
+rug(mtcars$hp)
+abline(v=mean(mtcars$hp), col="purple", lwd=4)
+abline(v=median(mtcars$hp), lwd=2)
+
+head(airquality)
+table(airquality$Month)
+plot.new()
+with(airquality, plot(Temp, Ozone, type = "n"))
+with(subset(airquality, Month==5), points(Temp, Ozone, pch="5", cex=.5, col="red"))
+with(subset(airquality, Month==6), points(Temp, Ozone, pch="6", cex=.5, col="blue"))
+with(subset(airquality, Month==7), points(Temp, Ozone, pch="7", cex=.5, col="green"))
+with(subset(airquality, Month==8), points(Temp, Ozone, pch="8", cex=.5, col="yellow"))
+with(subset(airquality, Month==9), points(Temp, Ozone, pch="9", cex=.5, col="purple"))
+dev.copy2pdf(file="myplot.pdf")
+dev.off()
