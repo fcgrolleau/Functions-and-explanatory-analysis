@@ -14,11 +14,11 @@ scaling<-function(x){
         print(sc)
 }
 
-### Function working at the level of all colums
+### Function working at the level of all columns
 featurescaling<-function(data){
         data.frame(lapply(data, scaling))
 }
 
 ### Example
 str(scaling(diamonds[,5]))
-str(featurescaling(diamonds)) ## of note, it leaves the non numeric column untouched
+str(featurescaling(diamonds)) ## of note, it leaves the non-numeric columns untouched
