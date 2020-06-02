@@ -1,4 +1,5 @@
 ### Feature scaling function
+### Also, you can use the R command scale
 
 ### Function working at the column  level
 scaling<-function(x){

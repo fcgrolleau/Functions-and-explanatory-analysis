@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+source("featurescaling.R")
 diamondsscaled<-featurescaling(diamonds)
 diamondsscaled<-select(diamondsscaled, -(x:z))
 diamondsscaledmatrix<-as.matrix(select_if(diamondsscaled, is.numeric))
@@ -12,7 +13,10 @@ heatmap(diamondssubsample)
 
 ### Dendrogram
 distances<-dist(diamondssubsample)
-plot(as.dendrogram(hclust(distances, method = "average")))
+dendrogram<-as.dendrogram(hclust(distances, method = "average"))
+plot(dendrogram)
+library(rafalib)
+myplclust(hclust(distances, method = "complete"), lab.col = 2) ## replace lab.col=2 by factor of outcome of interest to get the bottom of the dendrogram colored
 
 ### K-means with 2 centroids, 1000 starts and max 1000 iteration per start
 str(kmeans(diamondssubsample, centers = 2, iter.max = 1000, nstart = 1000))
