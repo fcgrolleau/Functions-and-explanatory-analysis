@@ -1,0 +1,130 @@
+---
+title: "Statistical Inference Assignement"
+author: "François Grolleau"
+date: "26/06/2020"
+output: html_document
+---
+
+### Loading relevant packages
+
+```{r setup, results=FALSE}
+library(ggplot2)
+library(datasets)
+```
+
+# PART 1
+
+### Create matrix of dimention 1000 X 40
+It's populated with random variable from exponetial distribution of lambda 0.2 
+```{r, results=FALSE}
+lambda<-0.2
+samplesize<-40
+n_sim<-1000
+df<-matrix(rexp(samplesize*n_sim, lambda), n_sim, samplesize)
+```
+
+### Sampling distribution of 1000 sample means
+Each sample was of size 40
+vertical line stands for the theoretical mean mu
+as a result of the central limit theorem the sampling distribution of the sample mean is normally distributed with mean = mu and sandart deviation = sigma/sqrt(n)
+```{r, results=TRUE}
+means<-apply(df, 1, mean)
+hist(means)
+abline(v=1/lambda, lwd=10)
+```
+
+### Sampling distribution of 1000 sample variances
+Each sample was of size 40
+vertical line stands for the theoretical variance sigma^2
+as a result of the central limit theorem the sampling distribution of the sample variance is normally distributed with mean = sigma^2. 
+The normality of the distribution is only approximated because of
+i) the great kurtosis of the distrubution we are sampling from
+and
+ii) the limited sample size of each sample (40)
+```{r, results=TRUE}
+variances<-(apply(df, 1, sd))^2
+hist(variances)
+abline(v=1/lambda^2, lwd=10)
+```
+
+### Reshaping the data
+So that ggplot can exploit it
+```{r, results=TRUE}
+df2<-data.frame(name=factor(rep(c("1000 exp", "1000 means of 40 exps", "1000 variances of 40 exps"), each=1000)) , value=c(df[,1], means, variances))
+head(df2)
+tail(df2)
+```
+
+### Calculating the relevant statistics
+```{r, results=TRUE}
+summarystat<-data.frame(distribution_mean=1/lambda,
+                        mean_of_1000_means=mean(df2$value[which(df2$name=="1000 means of 40 exps")]),
+                        mean_of_1000_variances=mean(df2$value[which(df2$name=="1000 variances of 40 exps")]))
+summarystat 
+```
+
+### GGploting around
+Plotting the distribution with corresponding names
+```{r, results=TRUE}
+g<-ggplot(df2, aes(value, color=name, fill=name)) + geom_histogram(linetype="blank", position="identity", alpha=.6, binwidth = 1)
+g
+```
+
+Adding vertical lines of the means of the sampling distribution of 
+i) the sample mean
+ii) the sample variance
+
+They are unbiased estimates of the sample mean and the sample variance respectively
+```{r, results=TRUE}
+g<-g + geom_vline(xintercept = summarystat$mean_of_1000_means)
+g<-g + geom_vline(xintercept = summarystat$mean_of_1000_variances)
+g
+```
+
+# PART 2
+### Basic summary of the data
+```{r, results=TRUE}
+head(ToothGrowth)
+summary(ToothGrowth)
+str(ToothGrowth)
+```
+
+Putting dose as a factor and then describing the number of occurences of each factor (dose first, then supp)
+```{r, results=TRUE}
+ToothGrowth$dose<-factor(ToothGrowth$dose)
+table(ToothGrowth$dose)
+table(ToothGrowth$supp)
+```
+
+### GGploting around
+# Distribution of len relative to supp
+```{r, results=TRUE}
+ggplot(ToothGrowth, aes(len, col=supp)) + geom_boxplot() + coord_flip()
+```
+
+t test assuming uniequal variances
+95% CI an P-value are provided
+```{r, results=TRUE}
+t.test(ToothGrowth$len[which(ToothGrowth$supp=="OJ")],
+       ToothGrowth$len[which(ToothGrowth$supp=="VC")], var.equal = FALSE)
+```
+
+
+# Distribution of len relative to doses
+```{r, results=TRUE}
+ggplot(ToothGrowth, aes(len, col=dose)) + geom_boxplot() + coord_flip()
+```
+
+t tests assuming uniequal variances
+95% CIs an P-values are provided
+
+```{r, results=TRUE}
+t.test(ToothGrowth$len[which(ToothGrowth$dose==.5)],
+       ToothGrowth$len[which(ToothGrowth$dose==1)])
+
+t.test(ToothGrowth$len[which(ToothGrowth$dose==1)],
+       ToothGrowth$len[which(ToothGrowth$dose==2)])
+
+t.test(ToothGrowth$len[which(ToothGrowth$dose==.5)],
+       ToothGrowth$len[which(ToothGrowth$dose==2)])
+```
